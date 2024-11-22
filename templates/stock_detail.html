@@ -1,0 +1,349 @@
+{% extends "layout.html" %}
+{% block title %}{{ stock.ticker }} Details{% endblock %}
+
+{% block content %}
+<div class="stock-detail-container">
+    <div class="stock-header">
+        <h1>{{ stock.name }} ({{ stock.ticker }})</h1>
+        <div class="stock-price-info">
+            <div class="current-price">
+                <span class="label">Current Price</span>
+                <span class="value">${{ "%.2f"|format(stock.price) }}</span>
+            </div>
+            <div class="price-change">
+                <span class="label">Change</span>
+                <span class="value {{ 'positive' if stock.change >= 0 else 'negative' }}">
+                    {{ "%.2f"|format(stock.change) }}%
+                    <i class="fas fa-{{ 'caret-up' if stock.change >= 0 else 'caret-down' }}"></i>
+                </span>
+            </div>
+            <div class="volume">
+                <span class="label">Volume</span>
+                <span class="value">{{ stock.volume }}</span>
+            </div>
+        </div>
+        <div class="price-metrics">
+            <div class="metric">
+                <span class="label">Today's Range</span>
+                <span class="value">${{ "%.2f"|format(stock.day_low) }} - ${{ "%.2f"|format(stock.day_high) }}</span>
+            </div>
+            <div class="metric">
+                <span class="label">30-Day Range</span>
+                <span class="value">${{ "%.2f"|format(stock.month_low) }} - ${{ "%.2f"|format(stock.month_high) }}</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="chart-container">
+        <div class="chart-header">
+            <h2>Price History</h2>
+            <div class="chart-controls">
+                <button class="chart-toggle active" data-type="line">Line</button>
+                <button class="chart-toggle" data-type="candlestick">Candlestick</button>
+                <button class="chart-toggle" data-type="reset">Reset Zoom</button>
+            </div>
+        </div>
+        <div id="chart-wrapper" style="height: 500px;">
+            <canvas id="priceChart"></canvas>
+        </div>
+    </div>
+
+
+    <div class="trading-actions">
+        <a href="{{ url_for('trading_app.trade', stock_id=stock.id) }}" class="btn-trade">Trade This Stock</a>
+    </div>
+</div>
+
+<style>
+.stock-detail-container {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background:rgba(128, 128, 128, 0.4);
+    border-radius: 12px;
+    /* border: 1px solid aliceblue; */
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.stock-header {
+    margin-bottom: 2rem;
+}
+
+.stock-price-info {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+    margin-top: 1.5rem;
+    background-color: rgba(128, 128, 128, 0.7);
+    border-radius: 8px;
+    border: 1px solid aliceblue;
+}
+
+.price-metrics {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+    margin-top: 1.5rem;
+    padding: 1rem;
+    background: rgba(128, 128, 128, 0.7);
+    border-radius: 8px;
+    border: 1px solid aliceblue;
+}
+
+.label {
+    display: block;
+    font-size: 0.9rem;
+    color: black;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.value {
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+
+.positive {
+    color: #2ecc71;
+}
+
+.negative {
+    color: #e74c3c;
+}
+
+.chart-container {
+    margin: 2rem 0;
+    padding: 1rem;
+    background: rgba(0,0,0,0.5);
+    border-radius: 8px;
+    border: 1px solid aliceblue;
+}
+
+.chart-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.chart-controls {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.chart-toggle {
+    padding: 0.5rem 1rem;
+    border: 1px solid #ddd;
+    background: white;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.chart-toggle.active {
+    background: #2ecc71;
+    color: white;
+    border-color: #2ecc71;
+}
+
+.trading-actions {
+    margin-top: 2rem;
+    text-align: center;
+}
+
+.btn-trade {
+    display: inline-block;
+    padding: 1rem 2rem;
+    background: linear-gradient(135deg, #2ecc71, #27ae60);
+    color: white;
+    text-decoration: none;
+    border-radius: 6px;
+    font-weight: 600;
+    transition: transform 0.2s;
+}
+
+.btn-trade:hover {
+    transform: translateY(-2px);
+}
+
+.current-price
+{
+    background: (128, 128, 128, 0.7) !important; 
+}
+
+.volume, .current-price, .price-change
+{
+    padding: 1rem;
+}
+
+.stock-link {
+    color: #2c3e50;
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.2s;
+}
+
+.stock-link:hover {
+    color: #3498db;
+}
+</style>
+</style>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/luxon"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-luxon"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-chart-financial"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom"></script>
+<script src="https://cdn.jsdelivr.net/npm/hammerjs"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const ctx = document.getElementById('priceChart').getContext('2d');
+    const priceHistory = {{ price_history | tojson }};
+    let chart;
+
+    // Enhanced line chart with zoom capabilities
+    function createLineChart() {
+        return new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: priceHistory.map(item => item.date),
+                datasets: [{
+                    label: 'Stock Price',
+                    data: priceHistory.map(item => item.close_price),
+                    borderColor: '#2ecc71',
+                    tension: 0.1,
+                    pointRadius: 0,
+                    pointHoverRadius: 5
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                interaction: {
+                    intersect: false,
+                    mode: 'index'
+                },
+                plugins: {
+                    legend: { position: 'top' },
+                    zoom: {
+                        pan: { enabled: true },
+                        zoom: {
+                            wheel: { enabled: true },
+                            pinch: { enabled: true },
+                            mode: 'xy'
+                        }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return `Price: $${context.raw.toFixed(2)}`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: false,
+                        position: 'right'
+                    }
+                }
+            }
+        });
+    }
+
+    // Enhanced candlestick chart with all features
+    function createCandlestickChart() {
+        return new Chart(ctx, {
+            type: 'candlestick',
+            data: {
+                datasets: [{
+                    label: 'OHLC',
+                    data: priceHistory.map(item => ({
+                        x: new Date(item.date),
+                        o: parseFloat(item.open_price),
+                        h: parseFloat(item.high_price),
+                        l: parseFloat(item.low_price),
+                        c: parseFloat(item.close_price)
+                    })),
+                    color: {
+                        up: '#2ecc71',
+                        down: '#e74c3c',
+                    }
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                interaction: {
+                    intersect: false,
+                    mode: 'index',
+                },
+                plugins: {
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const data = context.raw;
+                                const change = ((data.c - data.o) / data.o * 100).toFixed(2);
+                                return [
+                                    `Open: $${data.o.toFixed(2)}`,
+                                    `High: $${data.h.toFixed(2)}`,
+                                    `Low: $${data.l.toFixed(2)}`,
+                                    `Close: $${data.c.toFixed(2)}`,
+                                    `Change: ${change}%`
+                                ];
+                            }
+                        }
+                    },
+                    
+                    zoom: {
+                        pan: { enabled: true },
+                        zoom: {
+                            wheel: { enabled: true },
+                            pinch: { enabled: true },
+                            mode: 'xy'
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        type: 'time',
+                        time: {
+                            unit: 'day',
+                            displayFormats: {
+                                day: 'MMM d, yyyy'
+                            }
+                        }
+                    },
+                    y: {
+                        position: 'right'
+                    }
+                }
+            }
+        });
+    }
+
+    // Initial chart
+    chart = createLineChart();
+
+    // Enhanced chart toggle functionality
+    document.querySelectorAll('.chart-toggle').forEach(button => {
+        button.addEventListener('click', function() {
+            const chartType = this.dataset.type;
+            
+            if (chartType === 'reset' && chart) {
+                chart.resetZoom();
+                return;
+            }
+
+            document.querySelectorAll('.chart-toggle').forEach(btn => 
+                btn.classList.remove('active'));
+            this.classList.add('active');
+
+            if (chart) chart.destroy();
+            chart = chartType === 'line' ? createLineChart() : createCandlestickChart();
+        });
+    });
+});
+</script>
+{% endblock %}
+

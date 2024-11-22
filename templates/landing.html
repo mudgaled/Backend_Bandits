@@ -1,0 +1,227 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<style>
+    :root {
+        --neon-green: #39FF14;
+        --dark-bg: #121212;
+    }
+
+    body {
+        background-color: var(--dark-bg);
+        color: white;
+    }
+
+    .hero-section {
+        background: linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,0.8)), url('/static/images/trading-bg.jpg');
+        background-size: cover;
+        color: var(--neon-green);
+        padding: 100px 0;
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+
+    .cta-buttons {
+        margin-top: 2rem;
+        gap: 1rem;
+        display: flex;
+        justify-content: center;
+    }
+
+    .features-section {
+        background: #1a1a1a;
+        padding: 80px 0;
+        margin-bottom: 2rem;
+    }
+
+    .feature-card {
+        background: #242424;
+        color: white;
+        text-align: center;
+        padding: 2rem;
+        border-radius: 8px;
+        border: 1px solid var(--neon-green);
+        box-shadow: 0 0 15px rgba(57, 255, 20, 0.2);
+        height: 100%;
+        margin-bottom: 2rem;
+        transition: transform 0.3s ease;
+    }
+
+    .feature-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 0 25px rgba(57, 255, 20, 0.4);
+    }
+
+    .feature-card i {
+        font-size: 2.5rem;
+        color: var(--neon-green);
+        margin-bottom: 1rem;
+    }
+
+    .stocks-section {
+        padding: 80px 0;
+    }
+
+    .stock-card {
+        background: #242424;
+        padding: 1.5rem;
+        border-radius: 8px;
+        border: 1px solid var(--neon-green);
+        box-shadow: 0 0 15px rgba(57, 255, 20, 0.2);
+        height: 100%;
+        margin-bottom: 2rem;
+        transition: transform 0.3s ease;
+    }
+
+    .stock-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 0 25px rgba(57, 255, 20, 0.4);
+    }
+
+    .stock-card h4 {
+        color: var(--neon-green);
+        margin-bottom: 1rem;
+    }
+
+    .stock-card ul {
+        list-style: none;
+        padding: 0;
+    }
+
+    .stock-card li {
+        padding: 0.5rem 0;
+        border-bottom: 1px solid #333;
+    }
+
+    .stock-card a {
+        color: white;
+        text-decoration: none;
+        transition: color 0.3s ease;
+    }
+
+    .stock-card a:hover {
+        color: var(--neon-green);
+    }
+
+    .btn-primary {
+        background-color: var(--neon-green);
+        border-color: var(--neon-green);
+        color: black;
+    }
+
+    .btn-outline-primary {
+        border-color: var(--neon-green);
+        color: var(--neon-green);
+    }
+
+    .btn-outline-primary:hover {
+        background-color: var(--neon-green);
+        color: black;
+    }
+
+    h2 {
+        color: var(--neon-green);
+    }
+
+    .display-4 {
+        font-weight: bold;
+        margin-bottom: 1rem;
+    }
+
+    .lead {
+        font-size: 1.5rem;
+        margin-bottom: 2rem;
+    }
+</style>
+
+<div class="hero-section">
+    <div class="container">
+        <h1 class="display-4">Welcome to Backend Bandit "Bandit Trader"</h1>
+        <p class="lead">Your Way to Loot Money</p>
+        <div class="cta-buttons">
+            <a href="{{ url_for('user_app.login') }}" class="btn btn-primary btn-lg">Login</a>
+            <a href="{{ url_for('user_app.signup') }}" class="btn btn-outline-primary btn-lg">Sign Up</a>
+        </div>
+    </div>
+</div>
+
+<div class="features-section">
+    <div class="container">
+        <h2 class="text-center mb-5">Why Trade With Us</h2>
+        <div class="row">
+            <div class="col-md-4">
+                <div class="feature-card">
+                    <i class="fas fa-chart-line"></i>
+                    <h3>Real-Time Analytics</h3>
+                    <p>Access advanced market analytics and real-time data to make informed decisions</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-card">
+                    <i class="fas fa-shield-alt"></i>
+                    <h3>Secure Trading</h3>
+                    <p>State-of-the-art security measures to protect your investments</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-card">
+                    <i class="fas fa-dollar-sign"></i>
+                    <h3>Commission-Free</h3>
+                    <p>Trade without hidden fees or commissions</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="stocks-section">
+    <div class="container">
+        <h2 class="text-center mb-5">Featured Stocks</h2>
+        <div class="row">
+            <div class="col-md-3">
+                <div class="stock-card">
+                    <h4>Technology</h4>
+                    <ul>
+                        <li><a href="{{ url_for('stocks_app.stock_detail', ticker='AAPL') }}">AAPL</a></li>
+                        <li><a href="{{ url_for('stocks_app.stock_detail', ticker='GOOGL') }}">GOOGL</a></li>
+                        <li><a href="{{ url_for('stocks_app.stock_detail', ticker='MSFT') }}">MSFT</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="col-md-3">
+                <div class="stock-card">
+                    <h4>Finance</h4>
+                    <ul>
+                        <li><a href="{{ url_for('stocks_app.stock_detail', ticker='JPM') }}">JPM</a></li>
+                        <li><a href="{{ url_for('stocks_app.stock_detail', ticker='BAC') }}">BAC</a></li>
+                        <li><a href="{{ url_for('stocks_app.stock_detail', ticker='GS') }}">GS</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="col-md-3">
+                <div class="stock-card">
+                    <h4>Healthcare</h4>
+                    <ul>
+                        <li><a href="{{ url_for('stocks_app.stock_detail', ticker='JNJ') }}">JNJ</a></li>
+                        <li><a href="{{ url_for('stocks_app.stock_detail', ticker='PFE') }}">PFE</a></li>
+                        <li><a href="{{ url_for('stocks_app.stock_detail', ticker='UNH') }}">UNH</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="col-md-3">
+                <div class="stock-card">
+                    <h4>Energy</h4>
+                    <ul>
+                        <li><a href="{{ url_for('stocks_app.stock_detail', ticker='XOM') }}">XOM</a></li>
+                        <li><a href="{{ url_for('stocks_app.stock_detail', ticker='CVX') }}">CVX</a></li>
+                        <li><a href="{{ url_for('stocks_app.stock_detail', ticker='BP') }}">BP</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
