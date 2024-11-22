@@ -21,3 +21,4 @@ mysql-connector-python
 python-dotenv
 yfinance
 flask_login
+numpy
