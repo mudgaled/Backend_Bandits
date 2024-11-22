@@ -63,3 +63,9 @@ Start the development server:
 3. **Use the app:**
    - Once the server is running, you can access the application through your local browser.
 ```
+
+*Team Members*: 
+1) Raghav Mudgal
+2) Ruhaan Mohan
+3) Gurhans Grover
+4) Dhyey Bhanderi
