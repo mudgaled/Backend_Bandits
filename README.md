@@ -1,5 +1,3 @@
-It looks like there are some issues with missing backticks for code blocks and incorrect placement of the language identifier (`bash`) for code block syntax highlighting. Here's the corrected version of your `README.md` with proper formatting for each step, especially for the bash code blocks:
-
 ```markdown
 # Backend Bandits: Stock Trading Management System
 
