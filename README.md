@@ -1,10 +1,36 @@
 *Backend Bandits*: Stock Trading Management System
 Project Overview:
 
+# Trading App
 The Backend Bandits Stock Trading Management System is a comprehensive platform designed to streamline and optimize stock trading activities. This system provides a robust solution for managing portfolios, tracking market trends and analyzing investment performance.
 
-*Team Members*: 
-1) Raghav Mudgal
-2) Ruhaan Mohan
-3) Gurhans Grover
-4) Dhyey Bhanderi
+## Features
+
+- Real-time market data visualization
+- Portfolio management and tracking
+- Trade execution and order management
+- User authentication and account security
+- Historical performance analytics
+- Custom alerts and notifications
+
+## Getting Started
+
+### Prerequisites
+
+- Python 3.10+
+- MySQL
+
+
+### Installation
+
+1. Clone the repository:
+```bash
+git clone https://github.com/mudgaled/Backend_Bandits
+
+2. Create and activate virtual environment:
+```bash
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+3. Install dependencies:
+```bash
+pip install -r requirements.txt
