@@ -39,7 +39,6 @@
             <h2>Price History</h2>
             <div class="chart-controls">
                 <button class="chart-toggle active" data-type="line">Line</button>
-                <button class="chart-toggle" data-type="candlestick">Candlestick</button>
                 <button class="chart-toggle" data-type="reset">Reset Zoom</button>
             </div>
         </div>
@@ -194,7 +193,6 @@
 <script src="https://cdn.jsdelivr.net/npm/chartjs-chart-financial"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom"></script>
 <script src="https://cdn.jsdelivr.net/npm/hammerjs"></script>
-
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const ctx = document.getElementById('priceChart').getContext('2d');
@@ -236,7 +234,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     tooltip: {
                         callbacks: {
                             label: function(context) {
-                                return `Price: $${context.raw.toFixed(2)}`;
+                                return `Price: ${context.raw.toFixed(2)}`;
                             }
                         }
                     }
@@ -251,99 +249,20 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Enhanced candlestick chart with all features
-    function createCandlestickChart() {
-        return new Chart(ctx, {
-            type: 'candlestick',
-            data: {
-                datasets: [{
-                    label: 'OHLC',
-                    data: priceHistory.map(item => ({
-                        x: new Date(item.date),
-                        o: parseFloat(item.open_price),
-                        h: parseFloat(item.high_price),
-                        l: parseFloat(item.low_price),
-                        c: parseFloat(item.close_price)
-                    })),
-                    color: {
-                        up: '#2ecc71',
-                        down: '#e74c3c',
-                    }
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                interaction: {
-                    intersect: false,
-                    mode: 'index',
-                },
-                plugins: {
-                    tooltip: {
-                        callbacks: {
-                            label: function(context) {
-                                const data = context.raw;
-                                const change = ((data.c - data.o) / data.o * 100).toFixed(2);
-                                return [
-                                    `Open: $${data.o.toFixed(2)}`,
-                                    `High: $${data.h.toFixed(2)}`,
-                                    `Low: $${data.l.toFixed(2)}`,
-                                    `Close: $${data.c.toFixed(2)}`,
-                                    `Change: ${change}%`
-                                ];
-                            }
-                        }
-                    },
-                    
-                    zoom: {
-                        pan: { enabled: true },
-                        zoom: {
-                            wheel: { enabled: true },
-                            pinch: { enabled: true },
-                            mode: 'xy'
-                        }
-                    }
-                },
-                scales: {
-                    x: {
-                        type: 'time',
-                        time: {
-                            unit: 'day',
-                            displayFormats: {
-                                day: 'MMM d, yyyy'
-                            }
-                        }
-                    },
-                    y: {
-                        position: 'right'
-                    }
-                }
-            }
-        });
-    }
-
     // Initial chart
     chart = createLineChart();
 
-    // Enhanced chart toggle functionality
+    // Chart toggle functionality
     document.querySelectorAll('.chart-toggle').forEach(button => {
         button.addEventListener('click', function() {
             const chartType = this.dataset.type;
-            
             if (chartType === 'reset' && chart) {
                 chart.resetZoom();
                 return;
             }
-
-            document.querySelectorAll('.chart-toggle').forEach(btn => 
-                btn.classList.remove('active'));
-            this.classList.add('active');
-
-            if (chart) chart.destroy();
-            chart = chartType === 'line' ? createLineChart() : createCandlestickChart();
         });
     });
 });
 </script>
+</script>
 {% endblock %}
-
