@@ -1,68 +1,152 @@
 {% extends "layout.html" %}
 
 {% block content %}
-<h2>ALL STOCKS</h2>
+<div class="stocks-container">
+    <h2 class="stocks-title">Market Overview</h2>
 
-<table class="stock-table">
-    <thead>
-        <tr>
-            <th>Ticker</th>
-            <th>Name</th>
-            <th>Price ($)</th>
-            <th>Change (%)</th>
-            <th>link</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for stock in stocks %}
-        <tr class="{{ 'positive' if stock.change > 0 else 'negative' if stock.change < 0 else '' }}">
-            <td class="ticker">{{ stock.ticker }}</td>
-            <td class="name">{{ stock.name }}</td>
-            <td class="price">{{ stock.price }}</td>
-            <td class="change">{{ stock.change }}</td>
-            <td><a href="{{ url_for('stocks_app.stock_detail', ticker=stock.ticker) }}" class="stock-link">{{ stock.ticker }}</a></td>
-
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
+    <div class="table-wrapper">
+        <table class="stock-table">
+            <thead>
+                <tr>
+                    <th>Ticker</th>
+                    <th>Company Name</th>
+                    <th>Price</th>
+                    <th>24h Change</th>
+                    <th>Details</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for stock in stocks %}
+                <tr class="{{ 'positive' if stock.change > 0 else 'negative' if stock.change < 0 else '' }}">
+                    <td class="ticker">{{ stock.ticker }}</td>
+                    <td class="name">{{ stock.name }}</td>
+                    <td class="price">${{ "%.2f"|format(stock.price) }}</td>
+                    <td class="change">
+                        <span class="change-value">
+                            {{ "%.2f"|format(stock.change) }}%
+                            <i class="fas fa-{{ 'caret-up' if stock.change > 0 else 'caret-down' }}"></i>
+                        </span>
+                    </td>
+                    <td>
+                        <a href="{{ url_for('stocks_app.stock_detail', ticker=stock.ticker) }}" class="view-btn">
+                            View Details
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
 
 <style>
+.stocks-container {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 0 20px;
+}
+
+.stocks-title {
+    font-size: 2.5rem;
+    color: #333;
+    margin-bottom: 2rem;
+    text-align: center;
+    font-weight: 700;
+}
+
+.table-wrapper {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
 .stock-table {
     width: 100%;
     border-collapse: collapse;
-    margin: 20px 0;
-}
-
-.stock-table th, .stock-table td {
-    padding: 12px;
-    text-align: left;
-    border-bottom: 1px solid #ddd;
+    background: white;
 }
 
 .stock-table th {
-    background-color: #f5f5f5;
-    font-weight: bold;
+    background: #f8f9fa;
+    color: #495057;
+    font-weight: 600;
+    padding: 1rem;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    letter-spacing: 0.5px;
+}
+
+.stock-table td {
+    padding: 1rem;
+    border-bottom: 1px solid #e9ecef;
+    font-size: 0.95rem;
 }
 
 .stock-table tr:hover {
-    background-color: #f9f9f9;
-}
-
-.positive .change {
-    color: #28a745;
-}
-
-.negative .change {
-    color: #dc3545;
+    background: #f8f9fa;
+    transition: background-color 0.2s ease;
 }
 
 .ticker {
-    font-weight: bold;
+    font-weight: 700;
+    color: #2c3e50;
+    font-size: 1.1rem;
 }
 
-.price, .change {
-    font-family: monospace;
+.name {
+    color: #495057;
+}
+
+.price {
+    font-family: 'Roboto Mono', monospace;
+    font-weight: 600;
+    color: #2c3e50;
+}
+
+.change-value {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 600;
+}
+
+.positive .change-value {
+    color: #28a745;
+}
+
+.negative .change-value {
+    color: #dc3545;
+}
+
+.view-btn {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    background: #007bff;
+    color: white;
+    text-decoration: none;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    transition: all 0.2s ease;
+}
+
+.view-btn:hover {
+    background: #0056b3;
+    transform: translateY(-1px);
+}
+
+@media (max-width: 768px) {
+    .stock-table {
+        font-size: 0.9rem;
+    }
+    
+    .stocks-title {
+        font-size: 2rem;
+    }
+    
+    .table-wrapper {
+        overflow-x: auto;
+    }
 }
 </style>
 {% endblock content %}
